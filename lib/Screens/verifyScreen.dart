@@ -1,165 +1,161 @@
+import 'dart:async';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-class OtpScreen extends StatefulWidget {
-  const OtpScreen({super.key});
+class Verify extends StatefulWidget {
+  const Verify({super.key});
 
   @override
-  State<OtpScreen> createState() => _OtpScreenState();
+  State<Verify> createState() => _VerifyState();
 }
 
-class _OtpScreenState extends State<OtpScreen> {
+class _VerifyState extends State<Verify> {
+  int _seconds = 60;
+  late Timer _timer;
+
+  @override
+  void initState() {
+    super.initState();
+    startTimer();
+  }
+
+  void startTimer() {
+    _timer = Timer.periodic(Duration(seconds: 1), (timer) {
+      if (_seconds > 0) {
+        setState(() {
+          _seconds--;
+        });
+      } else {
+        _timer.cancel();
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _timer.cancel();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
-      body: Column(
-        children: [
-          const Padding(
-            padding: const EdgeInsets.fromLTRB(20, 60, 0, 0),
-            child: Text("Almost there",
+      body: Container(
+        color: Colors.white,
+        padding: EdgeInsets.fromLTRB(20, 55, 20, 0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            SizedBox(height: 20.0), // Space from the AppBar
+            Text(
+              'Almost there',
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 24.0,
+              ),
+            ),
+            SizedBox(height: 20.0),
+            Text(
+              'Please enter the 6-digit code sent to your \nemail for verification',
+              maxLines: 2,
               textAlign: TextAlign.start,
               style: TextStyle(
-                  fontWeight: FontWeight.w400,
-                  fontSize: 25
-              ),),
-          ),
-          SizedBox(height: 20,),
-          Text("Please enter the 6-digit code sent to your\nemail for verification",
-            textAlign: TextAlign.start,
-            style: TextStyle(
-                fontWeight: FontWeight.w400,
-                fontSize: 20
-            ),),
-          SizedBox(height: 20,),
-          OtpCode()
-        ],
-      ),
+                fontSize: 18.0,
+              ),
+            ),
+            SizedBox(height: 20.0),
+            Center(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  for (int i = 0; i < 6; i++)
+                    Container(
+                      width: 40.0,
+                      height: 40,
+                      child: TextField(
+                        keyboardType: TextInputType.number,
+                        onChanged: (value){
+                          if (value.length == 1){
+                            FocusScope.of(context).nextFocus();
+                          }
+                        },
+                        textAlign: TextAlign.center,
+                        inputFormatters: [
+                          LengthLimitingTextInputFormatter(1),
+                          FilteringTextInputFormatter.digitsOnly
+                        ],
+                        decoration: InputDecoration(
+                          focusedBorder: OutlineInputBorder(
+                            borderSide: BorderSide(color: Colors.deepPurpleAccent),
+                          ),
+                          disabledBorder: OutlineInputBorder(
+                              borderSide: BorderSide(color: Colors.deepPurpleAccent)
+                          ),
+                          border: OutlineInputBorder(),
+                          contentPadding: EdgeInsets.symmetric(horizontal: 10.0),
+                        ),
+                      ),
+                    ),
+                ],
+              ),
+            ),
+            SizedBox(height: 60.0),
+            ElevatedButton(
+              onPressed: () {
+                // Handle OTP verification here
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.deepPurpleAccent,
+                padding: EdgeInsets.all(16.0),
+              ),
+              child: Text(
+                'VERIFY',
+                style: TextStyle(
+                  fontSize: 18.0,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+            SizedBox(height: 40.0),
+            Center(
+              child: InkWell(
+                onTap: () {
+                  // Handle clickable text action here
+                },
+                child: Text(
+                  'Didn\'t receive any code? Resend again',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16.0,
+                    color: Colors.black,
+                  ),
+                ),
+              ),
+            ),
+            SizedBox(height: 10.0),
+            Center(
+              child: Text(
+                'Request new code in $_seconds ',
+                style: TextStyle(
+                    fontWeight: FontWeight.w300,
+                    fontSize: 16.0,
+                    color: Colors.grey
 
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
 
-class OtpCode extends StatelessWidget {
-  const OtpCode({super.key});
 
-  @override
-  Widget build(BuildContext context) {
-    return Form(child: Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        SizedBox(
-          height: 68,
-            width: 64,
-          child: TextFormField(
-            onChanged: (value){
-              if (value.length == 1){
-               FocusScope.of(context).nextFocus();
-              }
-            },
-            onSaved: (pin1) {},
-            style: Theme.of(context).textTheme.headlineMedium,
-            keyboardType: TextInputType.number,
-            textAlign: TextAlign.center,
-            inputFormatters: [
-              LengthLimitingTextInputFormatter(1),
-              FilteringTextInputFormatter.digitsOnly
-            ],
-          ),
-        ),
-        SizedBox(
-          height: 68,
-          width: 64,
-          child: TextFormField(
-            onChanged: (value){
-              if (value.length == 1){
-                FocusScope.of(context).nextFocus();
-              }
-            },
-            style: Theme.of(context).textTheme.headlineMedium,
-            keyboardType: TextInputType.number,
-            textAlign: TextAlign.center,
-            inputFormatters: [
-              LengthLimitingTextInputFormatter(1),
-              FilteringTextInputFormatter.digitsOnly
-            ],
-          ),
-        ),
-        SizedBox(
-          height: 68,
-          width: 64,
-          child: TextFormField(
-            onChanged: (value){
-              if (value.length == 1){
-                FocusScope.of(context).nextFocus();
-              }
-            },
-            style: Theme.of(context).textTheme.headlineMedium,
-            keyboardType: TextInputType.number,
-            textAlign: TextAlign.center,
-            inputFormatters: [
-              LengthLimitingTextInputFormatter(1),
-              FilteringTextInputFormatter.digitsOnly
-            ],
-          ),
-        ),
-        SizedBox(
-          height: 68,
-          width: 64,
-          child: TextFormField(
-            onChanged: (value){
-              if (value.length == 1){
-                FocusScope.of(context).nextFocus();
-              }
-            },
-            style: Theme.of(context).textTheme.headlineMedium,
-            keyboardType: TextInputType.number,
-            textAlign: TextAlign.center,
-            inputFormatters: [
-              LengthLimitingTextInputFormatter(1),
-              FilteringTextInputFormatter.digitsOnly
-            ],
-          ),
-        ),
-        SizedBox(
-          height: 68,
-          width: 64,
-          child: TextFormField(
-            onChanged: (value){
-              if (value.length == 1){
-                FocusScope.of(context).nextFocus();
-              }
-            },
-            style: Theme.of(context).textTheme.headlineMedium,
-            keyboardType: TextInputType.number,
-            textAlign: TextAlign.center,
-            inputFormatters: [
-              LengthLimitingTextInputFormatter(1),
-              FilteringTextInputFormatter.digitsOnly
-            ],
-          ),
-        ),
-        SizedBox(
-          height: 68,
-          width: 64,
-          child: TextFormField(
-            onChanged: (value){
-              if (value.length == 1){
-                FocusScope.of(context).nextFocus();
-              }
-            },
-            style: Theme.of(context).textTheme.headlineMedium,
-            keyboardType: TextInputType.number,
-            textAlign: TextAlign.center,
-            inputFormatters: [
-              LengthLimitingTextInputFormatter(1),
-              FilteringTextInputFormatter.digitsOnly
-            ],
-          ),
-        ),
-      ],
-    ));
-  }
-}
+
+
+
+
 

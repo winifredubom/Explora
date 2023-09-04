@@ -16,7 +16,7 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
   int _pageindex = 0;
   @override
   void initState(){
-    _pageController = PageController(initialPage: 1);
+    _pageController = PageController(initialPage: 0);
         super.initState();
   }
 
@@ -63,7 +63,14 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
                       height: 60,
     child: ElevatedButton(
     onPressed: () {
-      _pageController.nextPage(duration: Duration(milliseconds: 300), curve: Curves.ease);
+      if (_pageindex < demo_data.length - 1) {
+        // If there are more pages to navigate to, go to the next page.
+        _pageController.nextPage(duration: Duration(milliseconds: 300), curve: Curves.ease);
+      } else {
+        // If you're on the last page, you can navigate to the next screen.
+        // Replace '/main' with the desired route for the next screen.
+        Navigator.of(context).pushReplacementNamed('/loginScreen');
+      }
     },
     child: Icon(Icons.arrow_forward_rounded , color: Colors.white,),
       style: ElevatedButton.styleFrom(
