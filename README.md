@@ -1,4 +1,4 @@
-# andis_assignment
+# Explora
 
 A new Flutter project.
 
